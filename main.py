@@ -73,6 +73,7 @@ def update_page(page, new_price):
 
 
 def main():
+    print("🔍 Loaded DATABASE_ID:", repr(DATABASE_ID))
     """Main script logic: fetch all assets from Notion and update their prices."""
     pages = notion.databases.query(database_id=DATABASE_ID)["results"]
 
