@@ -74,31 +74,34 @@ def update_page(page, new_price):
 
 def main():
     print("🔍 Loaded DATABASE_ID:", repr(DATABASE_ID))
-    """Main script logic: fetch all assets from Notion and update their prices."""
-    pages = notion.databases.query(database_id=DATABASE_ID)["results"]
+    if not DATABASE_ID:
+        raise ValueError("❌ DATABASE_ID is missing from environment variables.")
+
+    try:
+        pages = notion.databases.query(database_id=DATABASE_ID)["results"]
+    except Exception as e:
+        print(f"❌ Failed to query Notion database: {e}")
+        return
 
     for page in pages:
-        props = page["properties"]
+        props = page.get("properties", {})
 
-        # Get asset name
-        try:
-            name = props["Name"]["title"][0]["text"]["content"]
-        except (KeyError, IndexError):
-            name = None
+        # Extract name
+        name = (
+            props.get("Name", {}).get("title", [{}])[0]
+            .get("text", {})
+            .get("content", None)
+        )
 
-        # Get asset type
-        try:
-            type_ = props["Type"]["select"]["name"]
-        except KeyError:
-            type_ = None
+        # Extract type
+        type_ = props.get("Type", {}).get("select", {}).get("name", None)
 
         asset = {
             "name": name,
-            "symbol": name,  # We assume the name is also the ticker symbol
-            "type": type_
+            "symbol": name,
+            "type": type_,
         }
 
-        # Fetch price and update if valid
         new_price = get_price(asset)
         if new_price != -1:
             update_page(page, new_price)
