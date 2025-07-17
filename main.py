@@ -7,7 +7,7 @@ from notion_client import Client as NotionClient
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
+NOTION_DATABASE_ID = os.getenv("NOTION_NOTION_DATABASE_ID")
 
 # Initialize Alpaca clients for stock and crypto
 stock_client = StockHistoricalDataClient(ALPACA_API_KEY, ALPACA_SECRET_KEY)
@@ -73,12 +73,12 @@ def update_page(page, new_price):
 
 
 def main():
-    print("🔍 Loaded DATABASE_ID:", repr(DATABASE_ID))
-    if not DATABASE_ID:
-        raise ValueError("❌ DATABASE_ID is missing from environment variables.")
+    print("🔍 Loaded NOTION_DATABASE_ID:", repr(NOTION_DATABASE_ID))
+    if not NOTION_DATABASE_ID:
+        raise ValueError("❌ NOTION_DATABASE_ID is missing from environment variables.")
 
     try:
-        pages = notion.databases.query(database_id=DATABASE_ID)["results"]
+        pages = notion.databases.query(NOTION_DATABASE_ID=NOTION_DATABASE_ID)["results"]
     except Exception as e:
         print(f"❌ Failed to query Notion database: {e}")
         return
