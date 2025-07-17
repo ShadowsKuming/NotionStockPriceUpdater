@@ -78,7 +78,7 @@ def main():
         raise ValueError("❌ NOTION_DATABASE_ID is missing from environment variables.")
 
     try:
-        pages = notion.databases.query(NOTION_DATABASE_ID=NOTION_DATABASE_ID)["results"]
+        pages = notion.databases.query(database_id=NOTION_DATABASE_ID)["results"]
     except Exception as e:
         print(f"❌ Failed to query Notion database: {e}")
         return
