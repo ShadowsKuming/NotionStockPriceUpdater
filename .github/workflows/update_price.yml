@@ -28,5 +28,5 @@ jobs:
         ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
         ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
         NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-        DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
       run: python main.py
