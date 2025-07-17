@@ -16,16 +16,15 @@ crypto_client = CryptoHistoricalDataClient(ALPACA_API_KEY, ALPACA_SECRET_KEY)
 # Initialize Notion client
 notion = NotionClient(auth=NOTION_API_KEY)
 
-
 def get_price(asset):
     """Fetch the latest price of an asset using Alpaca."""
     try:
-        # Skip if required fields are missing
+        # Ensure required fields are present
         if not asset.get("symbol") or not asset.get("name") or not asset.get("type"):
             print("⚠️ Missing required fields: 'symbol', 'name', or 'type'. Skipping.")
             return -1
 
-        # Handle stocks and ETFs
+        # Stocks and ETFs
         if asset["type"] in {"stock", "etf"}:
             quote = stock_client.get_stock_latest_quote(
                 StockLatestQuoteRequest(symbol_or_symbols=asset["symbol"])
@@ -36,12 +35,17 @@ def get_price(asset):
             price = q.ask_price if q.ask_price and q.ask_price > 0 else q.bid_price
             return price if price and price > 0 else -1
 
-        # Handle cryptocurrencies
+        # Crypto
         elif asset["type"] == "crypto":
+            # Alpaca requires symbols in "BTC/USD" format
+            symbol = asset["symbol"]
+            if "/" not in symbol:
+                symbol += "/USD"
+
             quote = crypto_client.get_crypto_latest_quote(
-                CryptoLatestQuoteRequest(symbol_or_symbols=asset["symbol"])
+                CryptoLatestQuoteRequest(symbol_or_symbols=symbol)
             )
-            q = quote.get(asset["symbol"])
+            q = quote.get(symbol)
             if not q:
                 return -1
             price = q.ask_price if q.ask_price and q.ask_price > 0 else q.bid_price
@@ -54,6 +58,7 @@ def get_price(asset):
     except Exception as e:
         print(f"Error fetching {asset.get('name', 'Unknown')}: {e}")
         return -1
+
 
 
 def update_page(page, new_price):
